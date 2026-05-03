@@ -35,7 +35,7 @@ import com.example.newsapp.presentation.theme.*
 
 @Composable
 fun HomeScreen(
-    onArticleClick: (String) -> Unit,
+    onArticleClick: (Article) -> Unit,
     onSearchClick: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
@@ -51,7 +51,7 @@ fun HomeScreen(
 @Composable
 fun HomeScreenContent(
     uiState: HomeUiState,
-    onArticleClick: (String) -> Unit,
+    onArticleClick: (Article) -> Unit,
     onSearchClick: () -> Unit,
     onCategorySelected: (NewsCategory) -> Unit
 ) {
@@ -84,7 +84,7 @@ fun HomeScreenContent(
                     items(uiState.headlines) { article ->
                         HeadlineCard(
                             article = article,
-                            onClick = { onArticleClick(article.url) }
+                            onClick = { onArticleClick(article) }
                         )
                     }
                 }
@@ -119,7 +119,7 @@ fun HomeScreenContent(
             items(uiState.categoryArticles) { article ->
                 ArticleListItem(
                     article = article,
-                    onClick = { onArticleClick(article.url) }
+                    onClick = { onArticleClick(article) }
                 )
                 HorizontalDivider(
                     color     = LightGray,

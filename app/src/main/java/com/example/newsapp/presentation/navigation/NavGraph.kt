@@ -1,12 +1,16 @@
 package com.example.newsapp.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.newsapp.presentation.SharedArticleViewModel
 import com.example.newsapp.presentation.detail.ArticleDetailScreen
 import com.example.newsapp.presentation.favorites.FavoritesScreen
 import com.example.newsapp.presentation.home.HomeScreen
@@ -16,6 +20,8 @@ fun NavGraph(
     navController: NavHostController,
     modifier: Modifier = Modifier
     ) {
+    val sharedViewModel : SharedArticleViewModel = hiltViewModel()
+
     NavHost(
         navController    = navController,
         startDestination = Screen.Home.route,
@@ -23,12 +29,22 @@ fun NavGraph(
     ) {
         composable(Screen.Home.route) {
             HomeScreen(
-                onArticleClick = { url ->
-                    navController.navigate(Screen.ArticleDetail.createRoute(url))
+                onArticleClick = { article ->
+                    sharedViewModel.setArticle(article)
+                    navController.navigate(Screen.ArticleDetails.route)
                 },
                 onSearchClick = {
                     navController.navigate(Screen.Search.route)
                 }
+            )
+        }
+
+        composable(Screen.ArticleDetails.route) {
+            val article by sharedViewModel.selectedArticle.collectAsState()
+            ArticleDetailScreen(
+                articleUrl = article?.url ?: "",
+                article = article,
+                onBackClick = { navController.popBackStack() }
             )
         }
 
@@ -51,17 +67,6 @@ fun NavGraph(
             )
         }
 
-        composable(
-            route = Screen.ArticleDetail.route,
-            arguments = listOf(
-                navArgument("articleUrl") { type = NavType.StringType }
-            )
-        ) { backStackEntry ->
-            val url = backStackEntry.arguments?.getString("articleUrl") ?: ""
-            ArticleDetailScreen(
-                articleUrl = url,
-                onBackClick = { navController.popBackStack() }
-            )
-        }*/
+        */
     }
 }
