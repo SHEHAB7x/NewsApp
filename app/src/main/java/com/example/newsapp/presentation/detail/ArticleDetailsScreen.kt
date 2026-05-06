@@ -1,5 +1,8 @@
 package com.example.newsapp.presentation.detail
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,6 +37,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -46,6 +50,7 @@ import com.example.newsapp.presentation.theme.DarkGray
 import com.example.newsapp.presentation.theme.LightGray
 import com.example.newsapp.presentation.theme.NewsAppTheme
 import com.example.newsapp.presentation.theme.Primary
+import com.example.newsapp.presentation.theme.Secondary
 import com.example.newsapp.presentation.theme.White
 
 @Composable
@@ -55,6 +60,7 @@ fun ArticleDetailScreen(
     viewModel: ArticleDetailsViewModel = hiltViewModel()
 ){
     val isSaved by viewModel.isSaved.collectAsState()
+    val context = LocalContext.current
 
     LaunchedEffect(article) {
         article?.let {
@@ -77,7 +83,8 @@ fun ArticleDetailScreen(
         article = article,
         isSaved = isSaved,
         onBackClick = onBackClick,
-        onToggleSave = { viewModel.toggleSave() }
+        onToggleSave = { viewModel.toggleSave() },
+        context = context
     )
 }
 
@@ -86,7 +93,8 @@ fun ArticleDetailContent(
     article: Article,
     isSaved: Boolean,
     onBackClick: () -> Unit,
-    onToggleSave: () -> Unit
+    onToggleSave: () -> Unit,
+    context: Context
 ){
     Box(modifier = Modifier.fillMaxSize().background(White)){
         Column(modifier = Modifier.fillMaxSize()) {
@@ -190,8 +198,18 @@ fun ArticleDetailContent(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(80.dp))
+                Text(
+                    text = "Read full article →",
+                    color      = Secondary,
+                    fontSize   = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier   = Modifier.clickable {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(article.url))
+                        context.startActivity(intent)
+                    }
+                )
 
+                Spacer(modifier = Modifier.height(80.dp))
 
 
             }
@@ -231,7 +249,8 @@ fun ArticleDetailPreview() {
             article = fakeArticle,
             isSaved = false,
             onBackClick = {},
-            onToggleSave = {}
+            onToggleSave = {},
+            context = LocalContext.current
         )
     }
 }
