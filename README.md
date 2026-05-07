@@ -2,8 +2,13 @@
 
 A modern Android news application built with **Clean Architecture** and **Jetpack Compose**.
 
-## Screenshots
-_Coming soon_
+## 📸 Screenshots
+<p align="center">
+  <img src="screenshots/home.png" width="22%" />
+  <img src="screenshots/search.png" width="22%" />
+  <img src="screenshots/details.png" width="22%" />
+  <img src="screenshots/favorites.png" width="22%" />
+</p>
 
 ## Tech Stack
 
