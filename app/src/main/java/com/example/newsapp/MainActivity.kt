@@ -23,12 +23,13 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 import android.Manifest
+import com.example.newsapp.utils.NetworkMonitor
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    /*@Inject
-    lateinit var networkMonitor: NetworkMonitor*/
+    @Inject
+    lateinit var networkMonitor: NetworkMonitor
 
     private val notificationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
