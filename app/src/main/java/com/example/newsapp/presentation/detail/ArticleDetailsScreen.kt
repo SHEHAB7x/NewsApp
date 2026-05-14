@@ -17,12 +17,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -159,6 +161,33 @@ fun ArticleDetailContent(
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Back",
+                        tint = Color.White,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+
+                Box(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .size(36.dp)
+                        .clip(CircleShape)
+                        .background(Color.Black.copy(alpha = 0.4f))
+                        .clickable{
+                            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                                type = "text/plain"
+                                putExtra(Intent.EXTRA_SUBJECT, article.title)
+                                putExtra(Intent.EXTRA_TEXT, "${article.title}\n\n${article.url}")
+                            }
+                            context.startActivity(
+                                Intent.createChooser(shareIntent, "Share article via")
+                            )
+                        }
+                        .align(Alignment.TopEnd),
+                    contentAlignment = Alignment.Center
+                ){
+                    Icon(
+                        imageVector = Icons.Default.Share,
+                        contentDescription = "Share",
                         tint = Color.White,
                         modifier = Modifier.size(20.dp)
                     )
