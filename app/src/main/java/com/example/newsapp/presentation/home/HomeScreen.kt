@@ -9,9 +9,13 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -37,98 +41,133 @@ import com.example.newsapp.presentation.theme.*
 fun HomeScreen(
     onArticleClick: (Article) -> Unit,
     onSearchClick: () -> Unit,
-    viewModel: HomeViewModel = hiltViewModel()
+    viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
     HomeScreenContent(
         uiState        = uiState,
         onArticleClick = onArticleClick,
         onSearchClick  = onSearchClick,
-        onCategorySelected = viewModel::onCategorySelected
+        onCategorySelected = viewModel::onCategorySelected,
+        onRefresh = viewModel::refresh
     )
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeScreenContent(
     uiState: HomeUiState,
     onArticleClick: (Article) -> Unit,
     onSearchClick: () -> Unit,
-    onCategorySelected: (NewsCategory) -> Unit
+    onCategorySelected: (NewsCategory) -> Unit,
+    onRefresh: () -> Unit
 ) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-        contentPadding = PaddingValues(bottom = 16.dp)
-    ) {
-        item { SearchBarRow(onSearchClick = onSearchClick) }
-        item {
-            SectionHeader(
-                title    = "Latest News",
-                onSeeAll = {}
-            )
-        }
-        item {
-            if (uiState.isHeadlinesLoading) {
-                Box(
-                    modifier         = Modifier.fillMaxWidth().height(200.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                }
-            } else {
-                LazyRow(
-                    contentPadding        = PaddingValues(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    items(uiState.headlines) { article ->
-                        HeadlineCard(
-                            article = article,
-                            onClick = { onArticleClick(article) }
-                        )
+    val isRefreshing = uiState.isHeadlinesLoading || uiState.isCategoryLoading
+
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = uiState.isHeadlinesLoading,
+        onRefresh  = onRefresh
+    )
+
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .background(MaterialTheme.colorScheme.background)
+        .pullRefresh(pullRefreshState)
+    ){
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background),
+            contentPadding = PaddingValues(bottom = 16.dp)
+        ) {
+            item { SearchBarRow(onSearchClick = onSearchClick) }
+            item {
+                SectionHeader(
+                    title    = "Latest News",
+                    onSeeAll = {}
+                )
+            }
+            item {
+                if (uiState.isHeadlinesLoading) {
+                    Box(
+                        modifier         = Modifier.fillMaxWidth().height(200.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                    }
+                } else {
+                    LazyRow(
+                        contentPadding        = PaddingValues(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(uiState.headlines) { article ->
+                            HeadlineCard(
+                                article = article,
+                                onClick = { onArticleClick(article) }
+                            )
+                        }
                     }
                 }
             }
-        }
-        item {
-            Spacer(modifier = Modifier.height(20.dp))
-            LazyRow(
-                contentPadding        = PaddingValues(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(categories) { category ->
-                    CategoryChip(
-                        category   = category,
-                        isSelected = uiState.selectedCategory == category,
-                        onClick    = { onCategorySelected(category) }
+            item {
+                Spacer(modifier = Modifier.height(20.dp))
+                LazyRow(
+                    contentPadding        = PaddingValues(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(categories) { category ->
+                        CategoryChip(
+                            category   = category,
+                            isSelected = uiState.selectedCategory == category,
+                            onClick    = { onCategorySelected(category) }
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+            if (uiState.isCategoryLoading) {
+                item {
+                    Box(
+                        modifier         = Modifier.fillMaxWidth().height(300.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                    }
+                }
+            } else {
+                items(uiState.categoryArticles) { article ->
+                    ArticleListItem(
+                        article = article,
+                        onClick = { onArticleClick(article) }
+                    )
+                    HorizontalDivider(
+                        color     = MaterialTheme.colorScheme.surfaceVariant,
+                        thickness = 1.dp,
+                        modifier  = Modifier.padding(horizontal = 16.dp)
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-        if (uiState.isCategoryLoading) {
-            item {
-                Box(
-                    modifier         = Modifier.fillMaxWidth().height(300.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+
+            uiState.categoryError?.let { error ->
+                item {
+                    Text(
+                        text     = error,
+                        color    = Color.Red,
+                        fontSize = 13.sp,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
                 }
             }
-        } else {
-            items(uiState.categoryArticles) { article ->
-                ArticleListItem(
-                    article = article,
-                    onClick = { onArticleClick(article) }
-                )
-                HorizontalDivider(
-                    color     = MaterialTheme.colorScheme.surfaceVariant,
-                    thickness = 1.dp,
-                    modifier  = Modifier.padding(horizontal = 16.dp)
-                )
-            }
         }
+
+        PullRefreshIndicator(
+            refreshing = isRefreshing,
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter),
+            backgroundColor = MaterialTheme.colorScheme.surface
+        )
     }
+
 }
 
 @Preview(showBackground = true, showSystemUi = true)
@@ -150,7 +189,8 @@ fun HomeScreenPreview() {
             ),
             onArticleClick     = {},
             onSearchClick      = {},
-            onCategorySelected = {}
+            onCategorySelected = {},
+            onRefresh = {}
         )
     }
 }

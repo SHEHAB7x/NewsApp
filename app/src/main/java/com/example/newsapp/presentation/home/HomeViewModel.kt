@@ -76,4 +76,9 @@ class HomeViewModel @Inject constructor(
             }
         }
     }
+
+    fun refresh() {
+        loadHeadlines()
+        loadCategoryArticles(_uiState.value.selectedCategory)
+    }
 }
