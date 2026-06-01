@@ -37,7 +37,14 @@ A production-grade Android **news** application built with **Clean Architecture*
 - 🎯 **Onboarding** — 3-page onboarding shown only on first launch, skippable
 - ⚙️ **Settings** — Dark mode, notifications, language, country, app version
 - 🔥 **Firebase Crashlytics** — Automatic crash reporting + non-fatal error logging
+- 📖 **Reading history** — Track every opened article with clear all confirmation dialog
+- 👤 **Profile / About** — Developer info, GitHub/LinkedIn links, tech stack chips
 
+### Settings & Personalization
+- ⚙️ **Settings screen** — Dark mode, notifications, language, country, text size, history
+- 🌍 **Language selection** — 10 languages, passed to all API calls
+- 🗺️ **Country selection** — 15 countries for localized business headlines
+- 🔔 **Notifications** — Background news refresh every 15 min via WorkManager + push notifications
 ---
 
 ## 🏗️ Architecture
