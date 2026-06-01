@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.newsapp.domain.model.Country
 import com.example.newsapp.domain.model.Language
+import com.example.newsapp.domain.model.TextSize
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -26,6 +27,17 @@ class UserPreferencesManager @Inject constructor(
         private val NOTIFICATIONS_ENABLED = booleanPreferencesKey("notifications_enabled")
         private val SELECTED_LANGUAGE    = stringPreferencesKey("selected_language")
         private val SELECTED_COUNTRY     = stringPreferencesKey("selected_country")
+        private val TEXT_SIZE = stringPreferencesKey("text_size")
+    }
+
+    val selectedTextSize: Flow<TextSize> = context.dataStore.data
+        .map { prefs ->
+            val label = prefs[TEXT_SIZE] ?: TextSize.MEDIUM.label
+            TextSize.fromLabel(label)
+        }
+
+    suspend fun setTextSize(textSize: TextSize) {
+        context.dataStore.edit { it[TEXT_SIZE] = textSize.label }
     }
 
     val isOnboardingCompleted: Flow<Boolean> = context.dataStore.data
@@ -72,4 +84,6 @@ class UserPreferencesManager @Inject constructor(
     suspend fun setCountry(country: Country) {
         context.dataStore.edit { it[SELECTED_COUNTRY] = country.code }
     }
+
+
 }

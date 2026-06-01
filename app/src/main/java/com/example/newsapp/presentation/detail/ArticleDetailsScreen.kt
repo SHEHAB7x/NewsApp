@@ -49,11 +49,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.newsapp.domain.model.Article
 import com.example.newsapp.domain.model.Source
-import com.example.newsapp.presentation.theme.DarkGray
-import com.example.newsapp.presentation.theme.LightGray
+import com.example.newsapp.domain.model.TextSize
 import com.example.newsapp.presentation.theme.NewsAppTheme
-import com.example.newsapp.presentation.theme.Secondary
-import com.example.newsapp.presentation.theme.White
 import com.example.newsapp.utils.ReadTimeCalculator
 
 @Composable
@@ -64,6 +61,7 @@ fun ArticleDetailScreen(
 ){
     val isSaved by viewModel.isSaved.collectAsState()
     val context = LocalContext.current
+    val textSize by viewModel.textSize.collectAsState()
 
     LaunchedEffect(article) {
         article?.let {
@@ -87,7 +85,8 @@ fun ArticleDetailScreen(
         isSaved = isSaved,
         onBackClick = onBackClick,
         onToggleSave = { viewModel.toggleSave() },
-        context = context
+        context = context,
+        textSize = textSize
     )
 }
 
@@ -97,7 +96,8 @@ fun ArticleDetailContent(
     isSaved: Boolean,
     onBackClick: () -> Unit,
     onToggleSave: () -> Unit,
-    context: Context
+    context: Context,
+    textSize: TextSize
 ){
     Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)){
         Column(modifier = Modifier.fillMaxSize()) {
@@ -211,7 +211,7 @@ fun ArticleDetailContent(
                     Text(
                         text = it,
                         color = MaterialTheme.colorScheme.onBackground,
-                        fontSize = 15.sp,
+                        fontSize = textSize.descriptionSize,
                         fontWeight = FontWeight.SemiBold,
                         lineHeight = 22.sp
                     )
@@ -223,7 +223,7 @@ fun ArticleDetailContent(
                     Text(
                         text       = it,
                         color      = MaterialTheme.colorScheme.onBackground,
-                        fontSize   = 14.sp,
+                        fontSize   = textSize.bodySize,
                         lineHeight = 22.sp
                     )
                 }
@@ -293,7 +293,7 @@ fun ArticleDetailContent(
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+/*@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun ArticleDetailPreview() {
     NewsAppTheme {
@@ -302,10 +302,11 @@ fun ArticleDetailPreview() {
             isSaved = false,
             onBackClick = {},
             onToggleSave = {},
-            context = LocalContext.current
+            context = LocalContext.current,
+
         )
     }
-}
+}*/
 
 private val fakeArticle = Article(
     source      = Source(id = null, name = "BBC News"),

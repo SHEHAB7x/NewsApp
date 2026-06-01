@@ -21,6 +21,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.newsapp.domain.model.Country
 import com.example.newsapp.domain.model.Language
+import com.example.newsapp.domain.model.TextSize
 import com.example.newsapp.presentation.theme.*
 
 @Composable
@@ -113,6 +114,15 @@ fun SettingsScreen(
                 )
             }
 
+            item {
+                SettingsClickableItem(
+                    icon =  Icons.Default.Build,
+                    title = "Text Size",
+                    subtitle = uiState.selectedTextSize.label,
+                    onClick = viewModel::showTextSizeDialog
+                )
+            }
+
             // ── About section ──
             item { SettingsSectionHeader(title = "About") }
 
@@ -155,6 +165,18 @@ fun SettingsScreen(
             onDismiss   = viewModel::dismissDialogs
         )
     }
+
+    // Text size dialog
+    if (uiState.showTextSizeDialog) {
+        SelectionDialog(
+            title        = "Text Size",
+            items        = TextSize.values().map { it.label to it },
+            selectedItem = uiState.selectedTextSize,
+            onSelect     = { viewModel.selectedTextSize(it) },
+            onDismiss    = viewModel::dismissDialogs
+        )
+    }
+
 }
 
 // ─────────────────────────────────────────
