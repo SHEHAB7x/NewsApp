@@ -1,8 +1,10 @@
 package com.example.newsapp.presentation.navigation
 
+import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed class BottomNavItem(
@@ -12,4 +14,5 @@ sealed class BottomNavItem(
 ) {
     object Home     : BottomNavItem(Screen.Home.route,      Icons.Outlined.Home,     "Home")
     object Favorites: BottomNavItem(Screen.Favorites.route, Icons.Outlined.Favorite, "Favorite")
+    object Profile: BottomNavItem(Screen.Profile.route, Icons.Outlined.Person,"Profile")
 }

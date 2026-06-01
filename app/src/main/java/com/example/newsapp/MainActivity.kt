@@ -80,7 +80,8 @@ class MainActivity : ComponentActivity() {
 
                     val showBottomBar = currentRoute in listOf(
                         Screen.Home.route,
-                        Screen.Favorites.route
+                        Screen.Favorites.route,
+                        Screen.Profile.route
                     )
 
                     Box(

@@ -17,6 +17,7 @@ import com.example.newsapp.presentation.search.SearchScreen
 import com.example.newsapp.presentation.settings.SettingsScreen
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
+import com.example.newsapp.presentation.profile.ProfileScreen
 
 @Composable
 fun NavGraph(
@@ -117,6 +118,10 @@ fun NavGraph(
                     navController.popBackStack()
                 }
             )
+        }
+
+        composable(Screen.Profile.route){
+            ProfileScreen()
         }
     }
 }
